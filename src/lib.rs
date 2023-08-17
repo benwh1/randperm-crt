@@ -43,6 +43,11 @@ impl FactoredInteger {
     }
 }
 
+pub trait Permutation {
+    fn num_points(&self) -> u64;
+    fn nth(&self, n: u64) -> Option<u64>;
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RandomPermutation {
     num_points: u64,
@@ -86,11 +91,29 @@ impl RandomPermutation {
         })
     }
 
-    pub fn num_points(&self) -> u64 {
+    pub fn position(&self, n: u64) -> Option<u64> {
+        if n >= self.num_points {
+            None
+        } else {
+            Some(self.sub_perms.iter().rev().fold(0, |idx, perm| {
+                let pk = perm.len() as u64;
+                let pos = perm.iter().position(|&a| a == n % pk).unwrap() as u64;
+                idx * pk + pos
+            }))
+        }
+    }
+
+    pub fn iter(&self) -> RandomPermutationIter<'_> {
+        RandomPermutationIter { perm: self, idx: 0 }
+    }
+}
+
+impl Permutation for RandomPermutation {
+    fn num_points(&self) -> u64 {
         self.num_points
     }
 
-    pub fn nth(&self, mut n: u64) -> Option<u64> {
+    fn nth(&self, mut n: u64) -> Option<u64> {
         if n >= self.num_points {
             return None;
         }
@@ -109,22 +132,6 @@ impl RandomPermutation {
             .collect::<Vec<_>>();
 
         Some(crt::chinese_remainder(&remainders, &moduli).unwrap())
-    }
-
-    pub fn position(&self, n: u64) -> Option<u64> {
-        if n >= self.num_points {
-            None
-        } else {
-            Some(self.sub_perms.iter().rev().fold(0, |idx, perm| {
-                let pk = perm.len() as u64;
-                let pos = perm.iter().position(|&a| a == n % pk).unwrap() as u64;
-                idx * pk + pos
-            }))
-        }
-    }
-
-    pub fn iter(&self) -> RandomPermutationIter<'_> {
-        RandomPermutationIter { perm: self, idx: 0 }
     }
 }
 
