@@ -1,3 +1,5 @@
+pub mod crt;
+
 use rand::Rng;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -106,7 +108,7 @@ impl RandomPermutation {
             .map(|perm| perm.len() as u64)
             .collect::<Vec<_>>();
 
-        Some(ring_algorithm::chinese_remainder_theorem(&remainders, &moduli).unwrap())
+        Some(crt::chinese_remainder(&remainders, &moduli).unwrap())
     }
 
     pub fn iter(&self) -> RandomPermutationIter<'_> {
