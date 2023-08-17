@@ -111,6 +111,18 @@ impl RandomPermutation {
         Some(crt::chinese_remainder(&remainders, &moduli).unwrap())
     }
 
+    pub fn position(&self, n: u64) -> Option<u64> {
+        if n >= self.num_points {
+            None
+        } else {
+            Some(self.sub_perms.iter().rev().fold(0, |idx, perm| {
+                let pk = perm.len() as u64;
+                let pos = perm.iter().position(|&a| a == n % pk).unwrap() as u64;
+                idx * pk + pos
+            }))
+        }
+    }
+
     pub fn iter(&self) -> RandomPermutationIter<'_> {
         RandomPermutationIter { perm: self, idx: 0 }
     }
