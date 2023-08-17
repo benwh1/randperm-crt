@@ -47,6 +47,10 @@ pub struct RandomPermutation {
 }
 
 impl RandomPermutation {
+    pub fn new(n: u64) -> Option<Self> {
+        Self::with_rng(n, &mut rand::thread_rng())
+    }
+
     pub fn with_rng<R: Rng>(n: u64, rng: &mut R) -> Option<Self> {
         let n = FactoredInteger::new(n)?;
         let num_prime_powers = n.factors.len();
