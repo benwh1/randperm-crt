@@ -108,4 +108,23 @@ impl RandomPermutation {
 
         Some(ring_algorithm::chinese_remainder_theorem(&remainders, &moduli).unwrap())
     }
+
+    pub fn iter(&self) -> RandomPermutationIter<'_> {
+        RandomPermutationIter { perm: self, idx: 0 }
+    }
+}
+
+pub struct RandomPermutationIter<'a> {
+    perm: &'a RandomPermutation,
+    idx: u64,
+}
+
+impl Iterator for RandomPermutationIter<'_> {
+    type Item = u64;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let a = self.perm.nth(self.idx);
+        self.idx += 1;
+        a
+    }
 }
