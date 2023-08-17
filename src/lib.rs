@@ -1,3 +1,5 @@
+use rand::Rng;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct FactoredInteger {
     factors: Vec<(u8, u8)>,
@@ -14,7 +16,6 @@ impl FactoredInteger {
         }
 
         for p in (3..u8::MAX).step_by(2) {
-            println!("{p} {factors:?}");
             let q = p as u64;
 
             let mut counter = 0;
@@ -37,5 +38,58 @@ impl FactoredInteger {
         } else {
             None
         }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RandomPermutation {
+    sub_perms: Vec<Vec<u64>>,
+}
+
+impl RandomPermutation {
+    pub fn with_rng<R: Rng>(n: u64, rng: &mut R) -> Option<Self> {
+        let n = FactoredInteger::new(n)?;
+        let num_prime_powers = n.factors.len();
+
+        let mut order = (0..num_prime_powers).collect::<Vec<_>>();
+        for a in 0..num_prime_powers {
+            let b = rng.gen_range(a..num_prime_powers);
+            order.swap(a, b);
+        }
+
+        let sub_perms = (0..num_prime_powers)
+            .map(|i| {
+                let (p, k) = n.factors[order[i]];
+                let pk = (p as u64).pow(k as u32);
+                let mut vec = (0..pk).collect::<Vec<_>>();
+
+                let pk = pk as usize;
+                for a in 0..pk {
+                    let b = rng.gen_range(a..pk);
+                    vec.swap(a, b);
+                }
+
+                vec
+            })
+            .collect();
+
+        Some(Self { sub_perms })
+    }
+
+    pub fn nth(&self, mut n: u64) -> u64 {
+        let remainders = self.sub_perms.iter().fold(Vec::new(), |mut rem, perm| {
+            let pk = perm.len();
+            rem.push(perm[n as usize % pk]);
+            n /= pk as u64;
+            rem
+        });
+
+        let moduli = self
+            .sub_perms
+            .iter()
+            .map(|perm| perm.len() as u64)
+            .collect::<Vec<_>>();
+
+        ring_algorithm::chinese_remainder_theorem(&remainders, &moduli).unwrap()
     }
 }
