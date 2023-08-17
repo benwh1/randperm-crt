@@ -91,16 +91,8 @@ impl RandomPermutation {
         })
     }
 
-    pub fn position(&self, n: u64) -> Option<u64> {
-        if n >= self.num_points {
-            None
-        } else {
-            Some(self.sub_perms.iter().rev().fold(0, |idx, perm| {
-                let pk = perm.len() as u64;
-                let pos = perm.iter().position(|&a| a == n % pk).unwrap() as u64;
-                idx * pk + pos
-            }))
-        }
+    pub fn inverse(&self) -> Inverse<'_> {
+        Inverse { perm: self }
     }
 
     pub fn iter(&self) -> RandomPermutationIter<'_> {
@@ -152,5 +144,27 @@ impl Iterator for RandomPermutationIter<'_> {
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
         self.idx += n as u64;
         self.perm.nth(self.idx)
+    }
+}
+
+pub struct Inverse<'a> {
+    perm: &'a RandomPermutation,
+}
+
+impl<'a> Permutation for Inverse<'a> {
+    fn num_points(&self) -> u64 {
+        self.perm.num_points()
+    }
+
+    fn nth(&self, n: u64) -> Option<u64> {
+        if n >= self.num_points() {
+            None
+        } else {
+            Some(self.perm.sub_perms.iter().rev().fold(0, |idx, perm| {
+                let pk = perm.len() as u64;
+                let pos = perm.iter().position(|&a| a == n % pk).unwrap() as u64;
+                idx * pk + pos
+            }))
+        }
     }
 }
