@@ -127,4 +127,9 @@ impl Iterator for RandomPermutationIter<'_> {
         self.idx += 1;
         a
     }
+
+    fn nth(&mut self, n: usize) -> Option<Self::Item> {
+        self.idx += n as u64;
+        self.perm.nth(self.idx)
+    }
 }
