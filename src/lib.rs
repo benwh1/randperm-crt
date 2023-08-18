@@ -1,4 +1,4 @@
-pub mod crt;
+mod crt;
 
 use rand::Rng;
 
