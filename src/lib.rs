@@ -131,7 +131,7 @@ pub struct Inverse<'a> {
     perm: &'a RandomPermutation,
 }
 
-impl<'a> Permutation for Inverse<'a> {
+impl Permutation for Inverse<'_> {
     fn num_points(&self) -> u64 {
         self.perm.num_points()
     }
