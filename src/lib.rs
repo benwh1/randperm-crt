@@ -127,26 +127,6 @@ impl Permutation for RandomPermutation {
     }
 }
 
-pub struct PermutationIter<'a, P: Permutation> {
-    perm: &'a P,
-    idx: u64,
-}
-
-impl<P: Permutation> Iterator for PermutationIter<'_, P> {
-    type Item = u64;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let a = self.perm.nth(self.idx);
-        self.idx += 1;
-        a
-    }
-
-    fn nth(&mut self, n: usize) -> Option<Self::Item> {
-        self.idx += n as u64;
-        self.perm.nth(self.idx)
-    }
-}
-
 pub struct Inverse<'a> {
     perm: &'a RandomPermutation,
 }
@@ -166,6 +146,26 @@ impl<'a> Permutation for Inverse<'a> {
                 idx * pk + pos
             }))
         }
+    }
+}
+
+pub struct PermutationIter<'a, P: Permutation> {
+    perm: &'a P,
+    idx: u64,
+}
+
+impl<P: Permutation> Iterator for PermutationIter<'_, P> {
+    type Item = u64;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let a = self.perm.nth(self.idx);
+        self.idx += 1;
+        a
+    }
+
+    fn nth(&mut self, n: usize) -> Option<Self::Item> {
+        self.idx += n as u64;
+        self.perm.nth(self.idx)
     }
 }
 
