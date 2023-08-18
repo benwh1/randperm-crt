@@ -362,4 +362,33 @@ mod tests {
             }
         }
     }
+
+    mod iterator {
+        use rand::SeedableRng;
+        use rand_xoshiro::Xoshiro256StarStar;
+
+        use crate::*;
+
+        #[test]
+        fn test_next() {
+            let mut rng = Xoshiro256StarStar::seed_from_u64(123456789);
+            let p = RandomPermutation::with_rng(3113510400, &mut rng).unwrap();
+            let mut iter = p.iter();
+
+            for i in 0..1000 {
+                assert_eq!(iter.next(), p.nth(i));
+            }
+        }
+
+        #[test]
+        fn test_nth() {
+            let mut rng = Xoshiro256StarStar::seed_from_u64(123456789);
+            let p = RandomPermutation::with_rng(3113510400, &mut rng).unwrap();
+            let mut iter = p.iter();
+
+            for i in 0..1000 {
+                assert_eq!(iter.nth(1000000), p.nth((i + 1) * 1000000));
+            }
+        }
+    }
 }
