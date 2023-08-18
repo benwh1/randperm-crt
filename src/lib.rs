@@ -169,6 +169,37 @@ impl<P: Permutation> Iterator for PermutationIter<'_, P> {
     }
 }
 
+pub struct Composition<'a> {
+    perms: &'a [RandomPermutation],
+}
+
+impl<'a> Composition<'a> {
+    pub fn new(perms: &'a [RandomPermutation]) -> Option<Self> {
+        if perms.len() == 0 {
+            return None;
+        }
+
+        if !perms
+            .iter()
+            .all(|p| p.num_points() == perms[0].num_points())
+        {
+            return None;
+        }
+
+        Some(Self { perms })
+    }
+}
+
+impl Permutation for Composition<'_> {
+    fn num_points(&self) -> u64 {
+        self.perms[0].num_points()
+    }
+
+    fn nth(&self, n: u64) -> Option<u64> {
+        self.perms.iter().fold(Some(n), |n, perm| perm.nth(n?))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     mod factored_integer {
