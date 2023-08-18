@@ -17,8 +17,6 @@ pub fn chinese_remainder(remainders: &[u64], moduli: &[u64]) -> Option<u64> {
 }
 
 fn mod_inverse(a: i128, m: i128) -> Option<i128> {
-    let (a, m) = (a as i128, m as i128);
-
     let mut mn = (m, a);
     let mut xy = (0, 1);
 

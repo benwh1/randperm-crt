@@ -1,3 +1,13 @@
+#![warn(clippy::must_use_candidate)]
+#![deny(clippy::use_self)]
+#![deny(clippy::double_must_use)]
+#![deny(clippy::if_not_else)]
+#![deny(clippy::inconsistent_struct_constructor)]
+#![deny(clippy::iter_not_returning_iterator)]
+#![deny(clippy::map_unwrap_or)]
+#![deny(clippy::mod_module_files)]
+#![deny(clippy::semicolon_if_nothing_returned)]
+
 mod crt;
 
 use rand::Rng;
@@ -59,6 +69,7 @@ pub struct RandomPermutation {
 }
 
 impl RandomPermutation {
+    #[must_use]
     pub fn new(n: u64) -> Option<Self> {
         Self::with_rng(n, &mut rand::thread_rng())
     }
@@ -95,6 +106,7 @@ impl RandomPermutation {
         })
     }
 
+    #[must_use]
     pub fn inverse(&self) -> Inverse<'_> {
         Inverse { perm: self }
     }
@@ -174,8 +186,9 @@ pub struct Composition<'a> {
 }
 
 impl<'a> Composition<'a> {
+    #[must_use]
     pub fn new(perms: &'a [RandomPermutation]) -> Option<Self> {
-        if perms.len() == 0 {
+        if perms.is_empty() {
             return None;
         }
 
@@ -196,7 +209,7 @@ impl Permutation for Composition<'_> {
     }
 
     fn nth(&self, n: u64) -> Option<u64> {
-        self.perms.iter().fold(Some(n), |n, perm| perm.nth(n?))
+        self.perms.iter().try_fold(n, |n, perm| perm.nth(n))
     }
 }
 
