@@ -202,8 +202,13 @@ impl Permutation for Composition<'_> {
 
 #[cfg(test)]
 mod tests {
+    use rand::SeedableRng;
+    use rand_xoshiro::Xoshiro256StarStar;
+
+    use crate::*;
+
     mod factored_integer {
-        use crate::*;
+        use super::*;
 
         #[test]
         fn test_new_1() {
@@ -261,10 +266,7 @@ mod tests {
     }
 
     mod random_permutation {
-        use rand::SeedableRng;
-        use rand_xoshiro::Xoshiro256StarStar;
-
-        use crate::*;
+        use super::*;
 
         #[test]
         fn test_random_permutation() {
@@ -329,10 +331,7 @@ mod tests {
     }
 
     mod inverse {
-        use rand::SeedableRng;
-        use rand_xoshiro::Xoshiro256StarStar;
-
-        use crate::*;
+        use super::*;
 
         #[test]
         fn test_nth_1() {
@@ -395,10 +394,7 @@ mod tests {
     }
 
     mod iterator {
-        use rand::SeedableRng;
-        use rand_xoshiro::Xoshiro256StarStar;
-
-        use crate::*;
+        use super::*;
 
         #[test]
         fn test_next() {
@@ -424,10 +420,7 @@ mod tests {
     }
 
     mod composition {
-        use rand::SeedableRng;
-        use rand_xoshiro::Xoshiro256StarStar;
-
-        use crate::*;
+        use super::*;
 
         #[test]
         fn test_new_1() {
