@@ -43,9 +43,13 @@ impl FactoredInteger {
     }
 }
 
-pub trait Permutation {
+pub trait Permutation: Sized {
     fn num_points(&self) -> u64;
     fn nth(&self, n: u64) -> Option<u64>;
+
+    fn iter(&self) -> PermutationIter<'_, Self> {
+        PermutationIter { perm: self, idx: 0 }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -94,10 +98,6 @@ impl RandomPermutation {
     pub fn inverse(&self) -> Inverse<'_> {
         Inverse { perm: self }
     }
-
-    pub fn iter(&self) -> RandomPermutationIter<'_> {
-        RandomPermutationIter { perm: self, idx: 0 }
-    }
 }
 
 impl Permutation for RandomPermutation {
@@ -127,12 +127,12 @@ impl Permutation for RandomPermutation {
     }
 }
 
-pub struct RandomPermutationIter<'a> {
-    perm: &'a RandomPermutation,
+pub struct PermutationIter<'a, P: Permutation> {
+    perm: &'a P,
     idx: u64,
 }
 
-impl Iterator for RandomPermutationIter<'_> {
+impl<P: Permutation> Iterator for PermutationIter<'_, P> {
     type Item = u64;
 
     fn next(&mut self) -> Option<Self::Item> {
