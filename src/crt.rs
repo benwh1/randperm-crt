@@ -3,21 +3,24 @@ pub fn chinese_remainder(remainders: &[u64], moduli: &[u64]) -> Option<u64> {
         return None;
     }
 
-    let product_of_moduli: u64 = moduli.iter().product();
+    let product_of_moduli = moduli.iter().try_fold(1u64, |a, &b| a.checked_mul(b))? as i128;
     let mut result = 0;
 
     for (&remainder, &modulus) in remainders.iter().zip(moduli) {
+        let (remainder, modulus) = (remainder as i128, modulus as i128);
         let partial_product = product_of_moduli / modulus;
         let inverse = mod_inverse(partial_product, modulus)?;
         result += remainder * partial_product * inverse;
     }
 
-    Some(result % product_of_moduli)
+    Some((result % product_of_moduli) as u64)
 }
 
-pub fn mod_inverse(a: u64, m: u64) -> Option<u64> {
+fn mod_inverse(a: i128, m: i128) -> Option<i128> {
+    let (a, m) = (a as i128, m as i128);
+
     let mut mn = (m, a);
-    let mut xy = (0, 1u64);
+    let mut xy = (0, 1);
 
     while mn.1 != 0 {
         let quotient = mn.0 / mn.1;
