@@ -168,3 +168,128 @@ impl<'a> Permutation for Inverse<'a> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    mod factored_integer {
+        use crate::*;
+
+        #[test]
+        fn test_new_1() {
+            let n = FactoredInteger::new(14237396402848819200);
+            assert_eq!(
+                n,
+                Some(FactoredInteger {
+                    factors: vec![
+                        (2, 11),
+                        (3, 3),
+                        (5, 2),
+                        (7, 3),
+                        (11, 4),
+                        (13, 1),
+                        (19, 3),
+                        (23, 1)
+                    ]
+                })
+            );
+        }
+
+        #[test]
+        fn test_new_2() {
+            let n = FactoredInteger::new(8929777156897433877);
+            assert_eq!(
+                n,
+                Some(FactoredInteger {
+                    factors: vec![(3, 25), (199, 1), (211, 1), (251, 1)]
+                })
+            );
+        }
+
+        #[test]
+        fn test_new_3() {
+            let n = FactoredInteger::new(2u64.pow(63));
+            assert_eq!(
+                n,
+                Some(FactoredInteger {
+                    factors: vec![(2, 63)]
+                })
+            );
+        }
+
+        #[test]
+        fn test_new_4() {
+            let n = FactoredInteger::new(257);
+            assert_eq!(n, None);
+        }
+
+        #[test]
+        fn test_new_5() {
+            let n = FactoredInteger::new(1297068779 * 3196491187);
+            assert_eq!(n, None);
+        }
+    }
+
+    mod random_permutation {
+        use rand::SeedableRng;
+        use rand_xoshiro::Xoshiro256StarStar;
+
+        use crate::*;
+
+        #[test]
+        fn test_random_permutation() {
+            for seed in 0..10 {
+                let mut rng = Xoshiro256StarStar::seed_from_u64(seed);
+
+                let p = RandomPermutation::with_rng(362880, &mut rng).unwrap();
+                p.nth(3);
+
+                let mut vec = p.iter().collect::<Vec<_>>();
+                vec.sort();
+
+                assert!(vec.iter().copied().eq(0..362880));
+            }
+        }
+
+        #[test]
+        fn test_nth() {
+            let mut rng = Xoshiro256StarStar::seed_from_u64(0);
+            let p = RandomPermutation::with_rng((1..=20).product(), &mut rng).unwrap();
+
+            assert_eq!(p.nth(0), Some(1021963400465470519));
+            assert_eq!(p.nth(1), Some(1816380382727230519));
+            assert_eq!(p.nth(2), Some(575103847943230519));
+            assert_eq!(p.nth(1000000000000000000), Some(2281814948517154192));
+            assert_eq!(p.nth(2262432606807922128), Some(0));
+            assert_eq!(p.nth(2432902008176639999), Some(2366747676416260137));
+            assert_eq!(p.nth(2432902008176640000), None);
+            assert_eq!(p.nth(u64::MAX), None);
+        }
+    }
+
+    mod inverse {
+        use rand::SeedableRng;
+        use rand_xoshiro::Xoshiro256StarStar;
+
+        use crate::*;
+
+        #[test]
+        fn test_nth_1() {
+            let mut rng = Xoshiro256StarStar::seed_from_u64(0);
+            let p = RandomPermutation::with_rng((1..=20).product(), &mut rng).unwrap();
+            let inv = p.inverse();
+
+            assert_eq!(inv.nth(0), Some(2262432606807922128));
+        }
+
+        #[test]
+        fn test_nth_2() {
+            let mut rng = Xoshiro256StarStar::seed_from_u64(0);
+            let p = RandomPermutation::with_rng((1..=20).product(), &mut rng).unwrap();
+            let inv = p.inverse();
+
+            for i in 0..1000 {
+                assert_eq!(p.nth(inv.nth(i).unwrap()), Some(i));
+            }
+        }
+    }
+}
