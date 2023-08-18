@@ -422,4 +422,43 @@ mod tests {
             }
         }
     }
+
+    mod composition {
+        use rand::SeedableRng;
+        use rand_xoshiro::Xoshiro256StarStar;
+
+        use crate::*;
+
+        #[test]
+        fn test_new_1() {
+            let comp = Composition::new(&[]);
+            assert!(comp.is_none());
+        }
+
+        #[test]
+        fn test_new_2() {
+            let mut rng = Xoshiro256StarStar::seed_from_u64(7777777);
+            let p1 = RandomPermutation::with_rng(300, &mut rng).unwrap();
+            let p2 = RandomPermutation::with_rng(400, &mut rng).unwrap();
+
+            let v = vec![p1, p2];
+            let comp = Composition::new(&v);
+
+            assert!(comp.is_none());
+        }
+
+        #[test]
+        fn test_nth() {
+            let mut rng = Xoshiro256StarStar::seed_from_u64(7777777);
+            let p1 = RandomPermutation::with_rng(300, &mut rng).unwrap();
+            let p2 = RandomPermutation::with_rng(300, &mut rng).unwrap();
+
+            let v = vec![p1.clone(), p2.clone()];
+            let comp = Composition::new(&v).unwrap();
+
+            for i in 0..300 {
+                assert_eq!(comp.nth(i), p2.nth(p1.nth(i).unwrap()));
+            }
+        }
+    }
 }
