@@ -123,9 +123,9 @@ impl Permutation for RandomPermutation {
         }
 
         let remainders = self.sub_perms.iter().fold(Vec::new(), |mut rem, perm| {
-            let pk = perm.len();
-            rem.push(perm[n as usize % pk]);
-            n /= pk as u64;
+            let pk = perm.len() as u64;
+            rem.push(perm[(n % pk) as usize]);
+            n /= pk;
             rem
         });
 
