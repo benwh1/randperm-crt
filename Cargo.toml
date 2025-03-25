@@ -1,5 +1,4 @@
 [package]
-authors = ["Ben Whitmore"]
 name = "randperm-crt"
 version = "0.1.1"
 edition = "2021"
