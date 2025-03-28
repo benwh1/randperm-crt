@@ -69,6 +69,7 @@ pub struct RandomPermutation {
 }
 
 impl RandomPermutation {
+    #[cfg(feature = "thread_rng")]
     #[must_use]
     pub fn new(n: u64) -> Option<Self> {
         Self::with_rng(n, &mut rand::rng())

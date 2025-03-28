@@ -9,7 +9,11 @@ license = "GPL-3.0-only"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rand = "^0.9"
+rand = { version = "^0.9", default-features = false }
 
 [dev-dependencies]
 rand_xoshiro = "^0.7"
+
+[features]
+default = ["thread_rng"]
+thread_rng = ["rand/thread_rng"]
